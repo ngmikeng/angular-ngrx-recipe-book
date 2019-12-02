@@ -21,3 +21,11 @@ export class Ingredient {
     this.amount = amount;
   }
 }
+
+type RecipesFilter = 'ALL'
+
+export interface RecipeState {
+  items: Recipe[];
+  filter: RecipesFilter;
+}
+
