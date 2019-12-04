@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { Store, select } from '@ngrx/store';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RecipeService } from '../../recipe.service';
 import { Recipe } from '../../recipe.model';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalRecipeFormComponent } from 'src/app/shared/components/modals/modal-recipe-form/modal-recipe-form.component';
 import { RecipeFormComponent } from '../recipe-form/recipe-form.component';
+import { AppState } from '../../../../app.state';
+import * as recipeActions from '../../recipe.action';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-list',
@@ -12,14 +16,19 @@ import { RecipeFormComponent } from '../recipe-form/recipe-form.component';
 })
 export class RecipeListComponent implements OnInit {
   recipes: Recipe[];
+  recipes$: Observable<Recipe[]>;
 
   constructor(
+    private store: Store<AppState>,
     private modalService: NgbModal,
     private recipeService: RecipeService
   ) { }
 
   ngOnInit() {
-    this.recipes = this.recipeService.getRecipes();
+    // this.recipes = this.recipeService.getRecipes();
+    this.recipes$ = this.store.pipe(select('recipes')).pipe(map(state => {
+      return state.items;
+    }));
   }
 
   createRecipe() {
@@ -30,6 +39,7 @@ export class RecipeListComponent implements OnInit {
       .then(result => {
         if (result) {
           console.log(result);
+          this.store.dispatch(recipeActions.actionRecipeAdd({ recipe: result }));
         }
       })
       .catch(reason => console.log(reason));

@@ -33,15 +33,11 @@ export const initialState: RecipeState = {
 
 const reducer = createReducer(
   initialState,
-  on(recipeAction.actionRecipeAdd, (state, recipe) => ({
+  on(recipeAction.actionRecipeAdd, (state, payload) => ({
     ...state,
     items: [
       {
-        id: recipe.id,
-        name: recipe.name,
-        imagePath: recipe.imagePath,
-        description: recipe.description,
-        ingredients: recipe.ingredients
+        ...payload.recipe
       },
       ...state.items
     ]
