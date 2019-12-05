@@ -42,9 +42,9 @@ const reducer = createReducer(
       ...state.items
     ]
   })),
-  on(recipeAction.actionRecipeDelete, (state, recipe) => ({
+  on(recipeAction.actionRecipeDelete, (state, payload) => ({
     ...state,
-    items: state.items.filter((item: Recipe) => !item.id)
+    items: state.items.filter((item: Recipe) => item.id !== payload.id)
   }))
 );
 

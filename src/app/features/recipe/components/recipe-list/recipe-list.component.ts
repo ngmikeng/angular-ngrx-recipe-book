@@ -45,4 +45,8 @@ export class RecipeListComponent implements OnInit {
       .catch(reason => console.log(reason));
   }
 
+  onDeleteRecipe(id: string) {
+    this.store.dispatch(recipeActions.actionRecipeDelete({id: id}));
+  }
+
 }

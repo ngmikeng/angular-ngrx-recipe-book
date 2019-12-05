@@ -2,11 +2,6 @@
   <app-modal-recipe-form>
     <div class="container-fluid">
       <div class="form-group">
-        <button class="btn btn-success" type="submit" [disabled]="!recipeForm.valid">Submit</button>
-        <button class="btn btn-danger" type="button" (click)="onDiscard()">Discard</button>
-      </div>
-
-      <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" formControlName="name" />
       </div>
@@ -45,7 +40,7 @@
       </button>
     </div>
     <div role="footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-outline-secondary mr-1" (click)="closeModal()">Cancel</button>
       <button type="submit" ngbAutofocus class="btn btn-primary">Submit</button>
     </div>
   </app-modal-recipe-form>
