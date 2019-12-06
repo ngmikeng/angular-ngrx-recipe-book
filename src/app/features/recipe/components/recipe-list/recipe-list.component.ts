@@ -33,7 +33,6 @@ export class RecipeListComponent implements OnInit {
 
   createRecipe() {
     const modalRef = this.modalService.open(RecipeFormComponent, { size: 'sm' });
-    modalRef.componentInstance.recipeId = 1;
 
     modalRef.result
       .then(result => {
@@ -43,6 +42,22 @@ export class RecipeListComponent implements OnInit {
         }
       })
       .catch(reason => console.log(reason));
+  }
+
+  onEditRecipe(id) {
+    if (id) {
+      this.store.dispatch(recipeActions.actionRecipeBeginEdit({ id }));
+      const modalRef = this.modalService.open(RecipeFormComponent, { size: 'sm' });
+      modalRef.componentInstance.recipeId = id;
+
+      modalRef.result
+        .then(result => {
+          if (result) {
+            this.store.dispatch(recipeActions.actionRecipeUpdate({ id, recipe: result }));
+          }
+        })
+        .catch(reason => console.log(reason));
+    }
   }
 
   onDeleteRecipe(id: string) {

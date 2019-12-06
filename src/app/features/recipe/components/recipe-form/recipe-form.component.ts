@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
+import { Store, select } from '@ngrx/store';
 import { Ingredient, Recipe } from '../../recipe.model';
-import { ActivatedRoute, Router, Params } from '@angular/router';
-import { RecipeService } from '../../recipe.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { AppState } from '../../../../app.state';
+import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-form',
@@ -12,46 +14,39 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class RecipeFormComponent implements OnInit, OnDestroy {
   @Input()
-  recipeId: number;
+  recipeId: string | number;
+  recipeDetailSub: Subscription;
 
-  id: number;
   editMode = false;
   recipeForm: FormGroup;
   ingredientControlArray: FormArray;
 
   // form fields
-  formRecipeId: number;
   formRecipeName: string;
   formRecipeDesc: string;
   formRecipeImagePath: string;
   formRecipeIngredients: Ingredient[];
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private activeModal: NgbActiveModal,
-    private recipeService: RecipeService,
+    private store: Store<AppState>,
+    private activeModal: NgbActiveModal
   ) {}
 
   // Life-Cycle hooks
   ngOnInit() {
-    this.route.params.subscribe((params: Params) => {
-      this.id = +params['id'];
-      this.editMode = params['id'] != null;
-      this.initForm();
-    });
+    this.editMode = !!this.recipeId;
+    this.initForm();
   }
 
-  ngOnDestroy(): void {}
-
-  // Template hooks
-  onDiscard() {
-    this.router.navigate(['../'], { relativeTo: this.route });
+  ngOnDestroy(): void {
+    if (this.recipeDetailSub) {
+      this.recipeDetailSub.unsubscribe();
+    }
   }
 
   onSubmit() {
     const formData = new Recipe(
-      this.id,
+      this.recipeId,
       this.recipeForm.value['name'],
       this.recipeForm.value['description'],
       this.recipeForm.value['imagePath'],
@@ -85,28 +80,27 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
   private initForm() {
     this.ingredientControlArray = new FormArray([]);
     if (this.editMode) {
-      // const theRecipe = this.recipeService.getRecipe(this.id);
-      const theRecipe = null;
-      this.formRecipeId = theRecipe.id;
-      this.formRecipeName = theRecipe.name;
-      this.formRecipeDesc = theRecipe.description;
-      this.formRecipeImagePath = theRecipe.imagePath;
-      this.formRecipeIngredients = theRecipe.ingredients.slice();
-      console.log(this.id);
-      this.ingredientControlArray.controls.push(
-        ...this.initIngerdientsFormControls()
-      );
-      this.recipeForm = new FormGroup({
-        name: new FormControl(this.formRecipeName, Validators.required),
-        description: new FormControl(this.formRecipeDesc, Validators.required),
-        imagePath: new FormControl(
-          this.formRecipeImagePath,
-          Validators.required
-        ),
-        ingredients: this.ingredientControlArray
+      this.recipeDetailSub = this.store.pipe(select('recipes')).pipe(map(state => {
+        return state.itemDetail;
+      })).subscribe(theRecipe => {
+        this.formRecipeName = theRecipe.name;
+        this.formRecipeDesc = theRecipe.description;
+        this.formRecipeImagePath = theRecipe.imagePath;
+        this.formRecipeIngredients = theRecipe.ingredients.slice();
+        this.ingredientControlArray.controls.push(
+          ...this.initIngerdientsFormControls()
+        );
+        this.recipeForm = new FormGroup({
+          name: new FormControl(this.formRecipeName, Validators.required),
+          description: new FormControl(this.formRecipeDesc, Validators.required),
+          imagePath: new FormControl(
+            this.formRecipeImagePath,
+            Validators.required
+          ),
+          ingredients: this.ingredientControlArray
+        });
       });
     } else {
-      this.id = this.recipeService.getRecipes().length + 1;
       this.ingredientControlArray = new FormArray([]);
       this.recipeForm = new FormGroup({
         name: new FormControl(null, Validators.required),

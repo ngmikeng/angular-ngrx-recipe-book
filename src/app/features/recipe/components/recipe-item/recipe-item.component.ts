@@ -8,10 +8,17 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class RecipeItemComponent implements OnInit {
   @Input() recipe: any;
   @Output() onDelete: EventEmitter<string> = new EventEmitter();
+  @Output() onEdit: EventEmitter<string> = new EventEmitter();
 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  editItem(id: string) {
+    if (id) {
+      this.onEdit.emit(id);
+    }
   }
 
   deleteItem(id: string) {

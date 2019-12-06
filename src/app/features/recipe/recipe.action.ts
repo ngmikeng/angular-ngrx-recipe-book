@@ -7,4 +7,19 @@ export const actionRecipeAdd = createAction(
   props<{ recipe: Recipe }>()
 );
 
+export const actionRecipeUpdate = createAction(
+  '[Recipe] Update',
+  props<{ id: string, recipe: Recipe }>()
+);
+
+export const actionRecipeBeginEdit = createAction(
+  '[Recipe] Begin Edit',
+  props<{ id: string }>()
+);
+
+export const actionRecipeCancelEdit = createAction(
+  '[Recipe] Cancel Edit',
+  props<{ id: string }>()
+);
+
 export const actionRecipeDelete = createAction('[Recipe] Delete', props<{ id: string }>());

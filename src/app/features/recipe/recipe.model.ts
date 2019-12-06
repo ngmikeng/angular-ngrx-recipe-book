@@ -22,10 +22,12 @@ export class Ingredient {
   }
 }
 
-type RecipesFilter = 'ALL'
+type RecipesFilter = 'ALL' | '';
 
 export interface RecipeState {
   items: Recipe[];
+  itemDetail: Recipe;
+  selectedItems: Recipe[];
   filter: RecipesFilter;
 }
 

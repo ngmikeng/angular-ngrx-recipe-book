@@ -28,6 +28,8 @@ export const initialState: RecipeState = {
       ]
     )
   ],
+  itemDetail: null,
+  selectedItems: [],
   filter: 'ALL'
 };
 
@@ -37,10 +39,35 @@ const reducer = createReducer(
     ...state,
     items: [
       {
-        ...payload.recipe
+        ...payload.recipe,
+        id: uuid()
       },
       ...state.items
     ]
+  })),
+  on(recipeAction.actionRecipeUpdate, (state, payload) => {
+    const itemIndex = state.items.findIndex(item => item.id === payload.id);
+    if (itemIndex > -1) {
+      state.items[itemIndex] = {
+        id: payload.id,
+        ...payload.recipe
+      };
+    }
+    return {
+      ...state,
+      itemDetail: null
+    };
+  }),
+  on(recipeAction.actionRecipeBeginEdit, (state, payload) => {
+    const itemDetail = state.items.find(item => item.id === payload.id);
+    return {
+      ...state,
+      itemDetail: itemDetail
+    };
+  }),
+  on(recipeAction.actionRecipeCancelEdit, (state, payload) => ({
+    ...state,
+    itemDetail: null
   })),
   on(recipeAction.actionRecipeDelete, (state, payload) => ({
     ...state,

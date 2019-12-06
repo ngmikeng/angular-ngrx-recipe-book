@@ -9,6 +9,8 @@
 <div class="row">
   <div class="col-12">
     <!-- <app-recipe-item *ngFor="let item of recipes" [recipe]="item"></app-recipe-item> -->
-    <app-recipe-item *ngFor="let item of recipes$ | async" [recipe]="item" (onDelete)="onDeleteRecipe($event)"></app-recipe-item>
+    <app-recipe-item *ngFor="let item of recipes$ | async" [recipe]="item"
+      (onEdit)="onEditRecipe($event)"
+      (onDelete)="onDeleteRecipe($event)"></app-recipe-item>
   </div>
 </div>
