@@ -27,6 +27,11 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
   formRecipeImagePath: string;
   formRecipeIngredients: Ingredient[];
 
+  get name() { return this.recipeForm.get('name'); }
+  get description() { return this.recipeForm.get('description'); }
+  get imagePath() { return this.recipeForm.get('imagePath'); }
+  get ingredients() { return this.recipeForm.get('ingredients'); }
+
   constructor(
     private store: Store<AppState>,
     private activeModal: NgbActiveModal
@@ -45,19 +50,18 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const formData = new Recipe(
-      this.recipeId,
-      this.recipeForm.value['name'],
-      this.recipeForm.value['description'],
-      this.recipeForm.value['imagePath'],
-      this.recipeForm.value['ingredients']
-    );
-    if (this.editMode) {
-      // update
+    if (this.recipeForm.valid) {
+      const formData = new Recipe(
+        this.recipeId,
+        this.recipeForm.value['name'],
+        this.recipeForm.value['description'],
+        this.recipeForm.value['imagePath'],
+        this.recipeForm.value['ingredients']
+      );
+      this.activeModal.close(formData);
     } else {
-      // create
+      this.recipeForm.markAllAsTouched();
     }
-    this.activeModal.close(formData);
   }
 
   onAddIngredient() {
@@ -103,9 +107,9 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
     } else {
       this.ingredientControlArray = new FormArray([]);
       this.recipeForm = new FormGroup({
-        name: new FormControl(null, Validators.required),
-        description: new FormControl(null, Validators.required),
-        imagePath: new FormControl(null, Validators.required),
+        name: new FormControl('', Validators.required),
+        description: new FormControl('', Validators.required),
+        imagePath: new FormControl('', Validators.required),
         ingredients: this.ingredientControlArray
       });
     }
